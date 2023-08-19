@@ -1,0 +1,16 @@
+service: fantasy-premier-league-reminder-serverless
+frameworkVersion: "3"
+plugins:
+  - serverless-dotenv-plugin
+
+provider:
+  name: aws
+  runtime: nodejs18.x
+  region: ap-southeast-2
+
+functions:
+  cronHandler:
+    handler: index.run
+    events:
+      # Invoke Lambda function at 9am (UTC, 5pm AWST) every day
+      - schedule: cron(0 9 * * ? *)
