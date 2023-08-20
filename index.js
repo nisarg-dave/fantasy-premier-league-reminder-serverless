@@ -19,25 +19,23 @@ require("dotenv").config();
     (element) => element.click()
   );
   await page.waitForSelector(
-    "#mainContent > div.wrapper.hasFixedSidebar > div > nav > div.fixtures-abridged.calendar > div.fixtures-abridged__list.js-match-list-container > div:nth-child(1) > time"
+    "#mainContent > div.wrapper.hasFixedSidebar > div > nav > div.fixtures-abridged.calendar > div.fixtures-abridged__list.js-match-list-container > div:nth-child(2) > time"
   );
   const date = await page.$eval(
-    "#mainContent > div.wrapper.hasFixedSidebar > div > nav > div.fixtures-abridged.calendar > div.fixtures-abridged__list.js-match-list-container > div:nth-child(1) > time",
+    "#mainContent > div.wrapper.hasFixedSidebar > div > nav > div.fixtures-abridged.calendar > div.fixtures-abridged__list.js-match-list-container > div:nth-child(2) > time",
     (element) => element.innerHTML
   );
   await page.waitForSelector(
-    "#mainContent > div.wrapper.hasFixedSidebar > div > nav > div.fixtures-abridged.calendar > div.fixtures-abridged__list.js-match-list-container > div:nth-child(1) > a:nth-child(3) > time"
+    "#mainContent > div.wrapper.hasFixedSidebar > div > nav > div.fixtures-abridged.calendar > div.fixtures-abridged__list.js-match-list-container > div:nth-child(2) > a:nth-child(4) > time"
   );
   const time = await page.$eval(
-    "#mainContent > div.wrapper.hasFixedSidebar > div > nav > div.fixtures-abridged.calendar > div.fixtures-abridged__list.js-match-list-container > div:nth-child(1) > a:nth-child(3) > time",
+    "#mainContent > div.wrapper.hasFixedSidebar > div > nav > div.fixtures-abridged.calendar > div.fixtures-abridged__list.js-match-list-container > div:nth-child(2) > a:nth-child(4) > time",
     (element) => element.innerHTML
   );
-
-  console.log(
-    new Date(
-      date + time + new Date(Date.now()).getFullYear()
-    ).toLocaleString() - new Date(Date.now()).toLocaleString()
-  );
-
+  const timeDiffmS =
+    new Date(date + time + new Date(Date.now()).getFullYear()) -
+    new Date(Date.now());
+  const timeDiffS = timeDiffmS / 1000;
+  const hours = timeDiffS / (60 * 60);
   // await browser.close();
 })();
