@@ -4,9 +4,17 @@ require("dotenv").config();
 
 // module.exports.run = async (event, context) => {
 (async () => {
-  const browser = await puppeteer.launch({ headless: true });
+  const browser = await puppeteer.launch({
+    headless: false,
+    slowMo: 20,
+    args: ["--disable-notifications"],
+  });
   const page = await browser.newPage();
-  await page.setUserAgent(userAgent.random().toString());
+  await page.setUserAgent(
+    "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/115.0.0.0 Safari/537.36"
+  );
+  await page.setViewport({ width: 1000, height: 600 });
+  await page.setDefaultNavigationTimeout(1000000);
   await page.goto("https://www.premierleague.com/");
   await page.click("#onetrust-accept-btn-handler");
   await page.waitForSelector("#advertClose");
@@ -37,5 +45,21 @@ require("dotenv").config();
     new Date(Date.now());
   const timeDiffS = timeDiffmS / 1000;
   const hours = timeDiffS / (60 * 60);
-  // await browser.close();
+
+  await page.goto("https://www.facebook.com/");
+  await page.waitForSelector("#email");
+  await page.type("#email", process.env.FB_EMAIL);
+  await page.type("#pass", process.env.FB_PASSWORD);
+  await page.click(`[type="submit"]`);
+  await page.waitForSelector(`[aria-label="Messenger"]`);
+  await page.click(`[aria-label="Messenger"]`);
+  await page.waitForSelector(`[aria-current="false"]`);
+  await page.click(`[aria-current="false"]`);
+  await page.waitForSelector(`[aria-label="Message"]`);
+  await page.type(
+    `[aria-label="Message"]`,
+    "Hello, my name is Frank Russell, a friendly Fantasy Premier League Reminder Bot developed by Nisarg. My account name couldn't be called Fantasy Premier League Reminder as Facebook wouldn't let me do that for a user account and so my name is Frank Russell. I'm going to try to remind you guys to do your Fantasy Premier League teams every week before the deadline. Hopefully, I don't get banned by Zuckerberg and Nisarg doesn't get a massive bill by the cloud provider I'm deployed on. I'm still in the development/testing stage at the moment but stay tuned."
+  );
+  await page.click(`[aria-label="Press Enter to send"]`);
+  await browser.close();
 })();

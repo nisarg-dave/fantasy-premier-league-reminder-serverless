@@ -7,7 +7,7 @@
   "dependencies": {
     "dotenv": "^16.3.1",
     "puppeteer": "^21.0.3",
-    "user-agents": "^1.0.1444"
+    "user-agents": "^0.0.2"
   },
   "devDependencies": {
     "serverless-dotenv-plugin": "^6.0.0"
