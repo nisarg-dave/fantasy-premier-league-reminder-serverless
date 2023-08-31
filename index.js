@@ -1,5 +1,4 @@
 const puppeteer = require("puppeteer");
-const userAgent = require("user-agents");
 require("dotenv").config();
 
 // module.exports.run = async (event, context) => {
@@ -27,17 +26,17 @@ require("dotenv").config();
     (element) => element.click()
   );
   await page.waitForSelector(
-    "#mainContent > div.wrapper.hasFixedSidebar > div > nav > div.fixtures-abridged.calendar > div.fixtures-abridged__list.js-match-list-container > div:nth-child(2) > time"
+    "#mainContent > div.wrapper.hasFixedSidebar > div > nav > div.fixtures-abridged.calendar > div.fixtures-abridged__list.js-match-list-container > div:nth-child(1) > time"
   );
   const date = await page.$eval(
-    "#mainContent > div.wrapper.hasFixedSidebar > div > nav > div.fixtures-abridged.calendar > div.fixtures-abridged__list.js-match-list-container > div:nth-child(2) > time",
+    "#mainContent > div.wrapper.hasFixedSidebar > div > nav > div.fixtures-abridged.calendar > div.fixtures-abridged__list.js-match-list-container > div:nth-child(1) > time",
     (element) => element.innerHTML
   );
   await page.waitForSelector(
-    "#mainContent > div.wrapper.hasFixedSidebar > div > nav > div.fixtures-abridged.calendar > div.fixtures-abridged__list.js-match-list-container > div:nth-child(2) > a:nth-child(3) > time"
+    "#mainContent > div.wrapper.hasFixedSidebar > div > nav > div.fixtures-abridged.calendar > div.fixtures-abridged__list.js-match-list-container > div:nth-child(1) > a:nth-child(2) > time"
   );
   const time = await page.$eval(
-    "#mainContent > div.wrapper.hasFixedSidebar > div > nav > div.fixtures-abridged.calendar > div.fixtures-abridged__list.js-match-list-container > div:nth-child(2) > a:nth-child(3) > time",
+    "#mainContent > div.wrapper.hasFixedSidebar > div > nav > div.fixtures-abridged.calendar > div.fixtures-abridged__list.js-match-list-container > div:nth-child(1) > a:nth-child(2) > time",
     (element) => element.innerHTML
   );
   const timeDiffmS =
@@ -49,24 +48,31 @@ require("dotenv").config();
   if (hours < 24) {
     const deadline = new Date(
       new Date(date + time + new Date(Date.now()).getFullYear()) - 5400000
-    ).toLocaleString("en-AU", { timeZone: "Australia/Perth" });
-    console.log(deadline);
-    // await page.goto("https://www.facebook.com/");
-    // await page.waitForSelector("#email");
-    // await page.type("#email", process.env.FB_EMAIL);
-    // await page.type("#pass", process.env.FB_PASSWORD);
-    // await page.click(`[type="submit"]`);
-    // await page.waitForSelector(`[aria-label="Messenger"]`);
-    // await page.click(`[aria-label="Messenger"]`);
-    // await page.waitForSelector(`[aria-current="false"]`);
-    // await page.click(`[aria-current="false"]`);
-    // await page.waitForSelector(`[aria-label="Message"]`);
-    // await page.type(
-    //   `[aria-label="Message"]`,
-    //   "Hello, my name is Frank Russell, a friendly Fantasy Premier League Reminder Bot developed by Nisarg. My account name couldn't be called Fantasy Premier League Reminder as Facebook wouldn't let me do that for a user account and so my name is Frank Russell. I'm going to try to remind you guys to do your Fantasy Premier League teams every week before the deadline. Hopefully, I don't get banned by Zuckerberg and Nisarg doesn't get a massive bill by the cloud provider I'm deployed on. I'm still in the development/testing stage at the moment but stay tuned."
-    // );
-    // await page.click(`[aria-label="Press Enter to send"]`);
-    // await browser.close();
+    );
+    const deadlineDate = deadline.toDateString("en-AU", {
+      timeZone: "Australia/Perth",
+    });
+    const deadlineTime = deadline.toLocaleTimeString("en-AU", {
+      timeZone: "Australia/Perth",
+      hour: "2-digit",
+      minute: "2-digit",
+    });
+    await page.goto("https://www.facebook.com/");
+    await page.waitForSelector("#email");
+    await page.type("#email", process.env.FB_EMAIL);
+    await page.type("#pass", process.env.FB_PASSWORD);
+    await page.click(`[type="submit"]`);
+    await page.waitForSelector(`[aria-label="Messenger"]`);
+    await page.click(`[aria-label="Messenger"]`);
+    await page.waitForSelector(`[aria-current="false"]`);
+    await page.click(`[aria-current="false"]`);
+    await page.waitForSelector(`[aria-label="Message"]`);
+    await page.type(
+      `[aria-label="Message"]`,
+      `A friendly reminder that the Fantasy Premier League deadline for the upcoming matchweek is ${deadlineDate} at ${deadlineTime}. Please make any changes to your Fantasy Teams before this deadline.`
+    );
+    await page.click(`[aria-label="Press Enter to send"]`);
+    await browser.close();
   }
   await browser.close();
 })();
