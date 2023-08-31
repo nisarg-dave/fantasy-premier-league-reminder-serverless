@@ -12,5 +12,6 @@ functions:
   cronHandler:
     handler: index.run
     events:
-      # Invoke Lambda function at 9am (UTC, 5pm AWST) every day
+      # Invoke Lambda function at 9am (UTC, 5pm AWST) every day.
+      # ? means any value and * means include all. You can't specify the Day-of-month and Day-of-week fields in the same cron expression. If you specify a value or a * (asterisk) in one of the fields, you must use a ? (question mark) in the other.
       - schedule: cron(0 9 * * ? *)
