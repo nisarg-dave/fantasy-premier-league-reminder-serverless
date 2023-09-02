@@ -1,4 +1,4 @@
-service: fantasy-premier-league-reminder-serverless
+service: fpl-reminder
 frameworkVersion: "3"
 plugins:
   - serverless-dotenv-plugin

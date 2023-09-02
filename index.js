@@ -52,6 +52,7 @@ module.exports.run = async (event, context) => {
     new Date(Date.now());
   const timeDiffS = timeDiffmS / 1000;
   const hours = Math.abs(Math.round(timeDiffS / (60 * 60)));
+  console.log("Difference in hours: ", hours);
 
   // If the difference in hours is less than or equal to 24.
   if (hours <= 24) {
@@ -67,6 +68,9 @@ module.exports.run = async (event, context) => {
       hour: "2-digit",
       minute: "2-digit",
     });
+    console.log(
+      `Deadline date: ${deadlineDate} and deadline time: ${deadlineTime}`
+    );
     // Sign into Facebook and send the group a reminder message regarding the deadline.
     // ARIA is a set of attributes you can add to HTML elements to increase their accessibility. These attributes communicate role, state, and property to assistive technologies via accessibility APIs found in modern browsers.
     // This communication happens through the accessibility tree.
