@@ -1,15 +1,19 @@
-const puppeteer = require("puppeteer");
+const chromium = require("chrome-aws-lambda");
 require("dotenv").config();
 
 // module.exports is a special object in Node.js.
 // The module is a variable that represents the current module, and exports is an object that will be exposed as a module.
 // So, whatever you assign to module.exports will be exposed as a module.
 module.exports.run = async (event, context) => {
-  // disable browser notifications
-  const browser = await puppeteer.launch({
-    headless: true,
-    slowMo: 20,
-    args: ["--disable-notifications"],
+  // Launching a browser using the Chromium binary for AWS lambda with its default configurations.
+  // Puppeteer automatically downloads a recent version of Chrome and saves it in the $HOME/.cache/puppeteer folder by default.
+  // This becomes difficult when deploying to external service.
+  const browser = await chromium.puppeteer.launch({
+    args: chromium.args,
+    defaultViewport: chromium.defaultViewport,
+    executablePath: await chromium.executablePath,
+    headless: chromium.headless,
+    ignoreHTTPSErrors: true,
   });
   const page = await browser.newPage();
   await page.setUserAgent(
