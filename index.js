@@ -38,7 +38,7 @@ module.exports.run = async (event, context) => {
     "#mainContent > div.tabLinks.homeTabs > div > ul > li:nth-child(2)",
     (element) => element.click()
   );
-  console.log(`Matches tab clicked`);
+  console.log("Matches tab clicked");
   await page.waitForSelector(
     "#mainContent > div.wrapper.hasFixedSidebar > div > nav > div.fixtures-abridged.calendar"
   );
@@ -67,7 +67,6 @@ module.exports.run = async (event, context) => {
 
   // Calculate the difference in milliseconds between the date and time of the first game of the matchweek and the time that this function is run.
   // Convert the difference to hours. Added extra space in order to create valid date and subtracted 8 hours at the end to account for UTC time.
-  console.log(new Date(Date.now()));
   const timeDiffmS =
     new Date(date + time + " " + new Date(Date.now()).getFullYear()) -
     new Date(Date.now());
@@ -75,46 +74,45 @@ module.exports.run = async (event, context) => {
   const hours = Math.abs(Math.round(timeDiffS / (60 * 60))) - 8;
   console.log(`Difference in hours: ${JSON.stringify(hours)}`);
 
-  // // If the difference in hours is less than or equal to 24.
-  // if (hours <= 24) {
-  //   // Calculate the deadline time and date which is 90 minutes before the first game.
-  //   const deadline = new Date(
-  //     new Date(date + time + new Date(Date.now()).getFullYear()) - 5400000
-  //   );
-  //   const deadlineDate = deadline.toDateString("en-AU", {
-  //     timeZone: "Australia/Perth",
-  //   });
-  //   const deadlineTime = deadline.toLocaleTimeString("en-AU", {
-  //     timeZone: "Australia/Perth",
-  //     hour: "2-digit",
-  //     minute: "2-digit",
-  //   });
-  //   console.log(
-  //     `Deadline date: ${deadlineDate} and deadline time: ${deadlineTime}`
-  //   );
-  //   // Sign into Facebook and send the group a reminder message regarding the deadline.
-  //   // ARIA is a set of attributes you can add to HTML elements to increase their accessibility. These attributes communicate role, state, and property to assistive technologies via accessibility APIs found in modern browsers.
-  //   // This communication happens through the accessibility tree.
-  //   await page.goto("https://www.facebook.com/");
-  //   await page.waitForSelector("#email");
-  //   await page.type("#email", process.env.FB_EMAIL);
-  //   await page.type("#pass", process.env.FB_PASSWORD);
-  //   await page.click(`[type="submit"]`);
-  //   // aria-label attribute can be used to define a string that labels the interactive element on which it is set.
-  //   // Useful when an interactive element has no accessible name
-  //   // Using an attribute selector hence the square bracket
-  //   await page.waitForSelector(`[aria-label="Messenger"]`);
-  //   await page.click(`[aria-label="Messenger"]`);
-  //   // aria current indicates that this element is the current item
-  //   await page.waitForSelector(`[aria-current="false"]`);
-  //   await page.click(`[aria-current="false"]`);
-  //   await page.waitForSelector(`[aria-label="Message"]`);
-  //   await page.type(
-  //     `[aria-label="Message"]`,
-  //     `A friendly reminder that the Fantasy Premier League deadline for the upcoming matchweek is ${deadlineDate} at ${deadlineTime}. Please make any changes to your Fantasy Teams before this deadline.`
-  //   );
-  //   await page.click(`[aria-label="Press Enter to send"]`);
-  //   await browser.close();
-  // }
+  // If the difference in hours is less than or equal to 24.
+  if (hours <= 24) {
+    // Calculate the deadline time and date which is 90 minutes before the first game.
+    const deadline = new Date(
+      new Date(date + time + " " + new Date(Date.now()).getFullYear()) - 5400000
+    );
+    const deadlineDate = deadline.toDateString();
+    const deadlineTime = deadline.toLocaleTimeString({
+      hour: "2-digit",
+      minute: "2-digit",
+    });
+    console.log(
+      `Deadline date: ${deadlineDate} and deadline time: ${deadlineTime}`
+    );
+    // Sign into Facebook and send the group a reminder message regarding the deadline.
+    // ARIA is a set of attributes you can add to HTML elements to increase their accessibility. These attributes communicate role, state, and property to assistive technologies via accessibility APIs found in modern browsers.
+    // This communication happens through the accessibility tree.
+    await page.goto("https://www.facebook.com/");
+    await page.waitForSelector("#email");
+    await page.type("#email", process.env.FB_EMAIL);
+    await page.type("#pass", process.env.FB_PASSWORD);
+    await page.click(`[type="submit"]`);
+    // aria-label attribute can be used to define a string that labels the interactive element on which it is set.
+    // Useful when an interactive element has no accessible name
+    // Using an attribute selector hence the square bracket
+    await page.waitForSelector(`[aria-label="Messenger"]`);
+    await page.click(`[aria-label="Messenger"]`);
+    // aria current indicates that this element is the current item
+    await page.waitForSelector(`[aria-current="false"]`);
+    await page.click(`[aria-current="false"]`);
+    await page.waitForSelector(`[aria-label="Message"]`);
+    await page.type(
+      `[aria-label="Message"]`,
+      `A friendly reminder that the Fantasy Premier League deadline for the upcoming matchweek is ${deadlineDate} at ${deadlineTime}. Please make any changes to your Fantasy Teams before this deadline.`
+    );
+    await page.click(`[aria-label="Press Enter to send"]`);
+    const screenshot = await page.screenshot({ encoding: "base64" });
+    console.log("Base64 encoded screenshot: ", screenshot);
+    await browser.close();
+  }
   await browser.close();
 };
