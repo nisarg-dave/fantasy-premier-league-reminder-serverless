@@ -118,22 +118,30 @@ module.exports.run = async (event, context) => {
       // Sign into Facebook and send the group a reminder message regarding the deadline.
       // ARIA is a set of attributes you can add to HTML elements to increase their accessibility. These attributes communicate role, state, and property to assistive technologies via accessibility APIs found in modern browsers.
       // This communication happens through the accessibility tree.
-      await page.goto("https://www.facebook.com/");
+
+      //  Wait for there to be no network activity for at least 500ms.
+      await page.goto("https://www.facebook.com/", {
+        waitUntil: "networkidle0",
+      });
       await page.waitForSelector("#email");
       await page.type("#email", process.env.FB_EMAIL);
       await page.type("#pass", process.env.FB_PASSWORD);
       await page.click(`[type="submit"]`);
+
+      await page.waitForNavigation({
+        waitUntil: "networkidle0",
+      });
       // aria-label attribute can be used to define a string that labels the interactive element on which it is set.
       // Useful when an interactive element has no accessible name
       // Using an attribute selector hence the square bracket
-      await page.waitForSelector(`[aria-label="Messenger"]`);
+      await page.waitForSelector(`[aria-label="Messenger"]`, { visible: true });
       const screenshotOne = await page.screenshot({ encoding: "base64" });
       console.log("Base64 encoded screenshot 1: ", screenshotOne);
       await page.click(`[aria-label="Messenger"]`);
       // aria current indicates that this element is the current item
-      await page.waitForSelector(`[aria-current="false"]`);
+      await page.waitForSelector(`[aria-current="false"]`, { visible: true });
       await page.click(`[aria-current="false"]`);
-      await page.waitForSelector(`[aria-label="Message"]`);
+      await page.waitForSelector(`[aria-label="Message"]`, { visible: true });
       await page.type(
         `[aria-label="Message"]`,
         `A friendly reminder that the Fantasy Premier League deadline for the upcoming matchweek is ${deadlineDate} at ${deadlineTime}. Please make any changes to your Fantasy Teams before this deadline.`
@@ -141,12 +149,20 @@ module.exports.run = async (event, context) => {
       console.log(
         `Message Sent: A friendly reminder that the Fantasy Premier League deadline for the upcoming matchweek is ${deadlineDate} at ${deadlineTime}. Please make any changes to your Fantasy Teams before this deadline.`
       );
+      await page.waitForSelector(`[aria-label="Press Enter to send"]`, {
+        visible: true,
+      });
       await page.click(`[aria-label="Press Enter to send"]`);
       const screenshotTwo = await page.screenshot({ encoding: "base64" });
       console.log("Base64 encoded screenshot 2: ", screenshotTwo);
+      await page.waitForSelector(`[aria-label="Close chat"]`, {
+        visible: true,
+      });
       await page.click(`[aria-label="Close chat"]`);
       await browser.close();
     }
     await browser.close();
+  } else {
+    console.log("Less than 10 games.");
   }
 };
