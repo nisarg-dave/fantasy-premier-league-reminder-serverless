@@ -134,10 +134,25 @@ module.exports.run = async (event, context) => {
       // aria-label attribute can be used to define a string that labels the interactive element on which it is set.
       // Useful when an interactive element has no accessible name
       // Using an attribute selector hence the square bracket
-      await page.waitForSelector(`[aria-label="Messenger"]`, { visible: true });
+      let unreadMessages = false;
+      try {
+        await page.waitForSelector(`[aria-label="Messenger"]`, {
+          visible: true,
+        });
+      } catch {
+        console.log("Can't find selector, may have unread messages.");
+        unreadMessages = true;
+      }
       const screenshotOne = await page.screenshot({ encoding: "base64" });
       console.log("Base64 encoded screenshot 1: ", screenshotOne);
-      await page.click(`[aria-label="Messenger"]`);
+      if (unreadMessages) {
+        await page.waitForSelector(`[aria-label="Messenger, 1 unread"]`, {
+          visible: true,
+        });
+        await page.click(`[aria-label="Messenger, 1 unread"]`);
+      } else {
+        await page.click(`[aria-label="Messenger"]`);
+      }
       // aria current indicates that this element is the current item
       await page.waitForSelector(`[aria-current="false"]`, { visible: true });
       await page.click(`[aria-current="false"]`);
