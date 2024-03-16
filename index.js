@@ -175,8 +175,9 @@ module.exports.run = async (event, context) => {
       });
       await page.click(`[aria-label="Close chat"]`);
       await browser.close();
+    } else {
+      await browser.close();
     }
-    await browser.close();
   } else {
     console.log("Less than 10 games.");
   }
